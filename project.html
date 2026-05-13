@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes"/>
+    <title>Нейросетевые технологии | Полная версия проекта</title>
+    <meta name="description" content="Детальное исследование технологий DLSS, FSR, XeSS, Topaz Video AI и нейросетевых архитектур для обработки изображений"/>
+    <meta name="theme-color" content="#050505"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-title" content="Индивидуальный Проект"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="msapplication-tap-highlight" content="no"/>
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Tailwind Config -->
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface": "#050505",
+              "surface-container": "#0D0D0D",
+              "primary": "#ADC6FF",
+              "secondary": "#E9B3FF",
+              "nvidia": "#76B900",
+              "amd": "#ED1C24",
+              "topaz": "#00A86B",
+              "intel": "#0068B5",
+              "on-surface": "#F2F2F2",
+              "on-surface-variant": "#A1A1A1",
+            },
+            fontFamily: {
+              "headline": ["Manrope", "sans-serif"],
+              "body": ["Inter", "sans-serif"],
+            },
+            animation: {
+              'pulse-slow': 'pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'float': 'float 8s ease-in-out infinite',
+              'spin-slow': 'spin 20s linear infinite',
+              'marching-ants': 'marching-ants 3s linear infinite',
+              'drift': 'drift 30s linear infinite',
+              'gradient': 'gradient 10s ease infinite',
+              'glow': 'glow 3s ease-in-out infinite',
+              'bounce-slow': 'bounce 3s infinite',
+            },
+            keyframes: {
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-20px)' },
+              },
+              'marching-ants': {
+                '0%': { 'stroke-dashoffset': '24' },
+                '100%': { 'stroke-dashoffset': '0' }
+              },
+              'drift': {
+                '0%': { transform: 'translate(0, 0)' },
+                '50%': { transform: 'translate(40px, -40px)' },
+                '100%': { transform: 'translate(0, 0)' }
+              },
+              gradient: {
+                '0%, 100%': { backgroundPosition: '0% 50%' },
+                '50%': { backgroundPosition: '100% 50%' }
+              },
+              glow: {
+                '0%, 100%': { opacity: '0.5', transform: 'scale(1)' },
+                '50%': { opacity: '1', transform: 'scale(1.1)' }
+              }
+            },
+            backgroundSize: {
+              '300': '300% 300%',
+            }
+          },
+        },
+      }
+    </script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <style type="text/tailwindcss">
+        @layer base {
+            html { scroll-behavior: smooth; }
+            body {
+                @apply bg-surface text-on-surface antialiased;
+                overflow-x: hidden;
+            }
+        }
+        @layer components {
+            .glass-card {
+                @apply relative overflow-hidden transition-all duration-700;
+                backdrop-filter: blur(30px);
+                background: rgba(255, 255, 255, 0.02);
+                border: 1px solid rgba(255, 255, 255, 0.06);
+            }
+            .glass-card:hover {
+                background: rgba(255, 255, 255, 0.04);
+                border-color: rgba(173, 198, 255, 0.3);
+                transform: translateY(-6px);
+            }
+            .apple-button {
+                @apply relative overflow-hidden transition-all duration-500 active:scale-95;
+                background: linear-gradient(135deg, #ADC6FF 0%, #E9B3FF 100%);
+                box-shadow: 0 4px 20px rgba(173, 198, 255, 0.3);
+            }
+            .apple-button:hover {
+                box-shadow: 0 0 40px rgba(173, 198, 255, 0.5);
+                filter: brightness(1.15);
+                transform: translateY(-3px);
+            }
+            .text-gradient {
+                @apply bg-clip-text text-transparent bg-gradient-to-r from-[#ADC6FF] via-[#D0BCFF] to-[#E9B3FF];
+            }
+            .text-gradient-nvidia {
+                @apply bg-clip-text text-transparent bg-gradient-to-r from-[#76B900] to-[#8ED600];
+            }
+            .text-gradient-amd {
+                @apply bg-clip-text text-transparent bg-gradient-to-r from-[#ED1C24] to-[#FF4D4D];
+            }
+            .text-gradient-topaz {
+                @apply bg-clip-text text-transparent bg-gradient-to-r from-[#00A86B] to-[#00D4AA];
+            }
+            .text-gradient-intel {
+                @apply bg-clip-text text-transparent bg-gradient-to-r from-[#0068B5] to-[#009FFF];
+            }
+            .reveal {
+                opacity: 0;
+                transform: translateY(50px);
+                transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            .reveal.active {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            .parallax-bg {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -1;
+                pointer-events: none;
+            }
+            .glow-orb {
+                @apply absolute rounded-full blur-[200px] opacity-10 mix-blend-screen;
+            }
+            .nav-scrolled {
+                @apply bg-surface/80 backdrop-blur-[30px] border-b border-white/5 py-3;
+            }
+            .slider-handle {
+                @apply absolute top-0 bottom-0 w-1 bg-white cursor-ew-resize z-30;
+                box-shadow: 0 0 30px rgba(255,255,255,0.5);
+            }
+            .particle {
+                @apply absolute bg-white/10 rounded-full pointer-events-none;
+            }
+            .neural-line {
+                stroke-dasharray: 12 6;
+                @apply animate-marching-ants stroke-primary/25 fill-none;
+            }
+            .dlss-badge {
+                @apply inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest;
+                background: rgba(118, 185, 0, 0.15);
+                border: 1px solid rgba(118, 185, 0, 0.4);
+                color: #76B900;
+            }
+            .fsr-badge {
+                @apply inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest;
+                background: rgba(237, 28, 36, 0.15);
+                border: 1px solid rgba(237, 28, 36, 0.4);
+                color: #ED1C24;
+            }
+            .topaz-badge {
+                @apply inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest;
+                background: rgba(0, 168, 107, 0.15);
+                border: 1px solid rgba(0, 168, 107, 0.4);
+                color: #00A86B;
+            }
+            .xess-badge {
+                @apply inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest;
+                background: rgba(0, 104, 181, 0.15);
+                border: 1px solid rgba(0, 104, 181, 0.4);
+                color: #0068B5;
+            }
+            .version-card {
+                @apply relative overflow-hidden rounded-[2rem] p-6 transition-all duration-700;
+                background: rgba(255, 255, 255, 0.02);
+                border: 1px solid rgba(255, 255, 255, 0.06);
+            }
+            .version-card:hover {
+                transform: translateY(-4px);
+                background: rgba(255, 255, 255, 0.04);
+            }
+            .version-card.dlss-5 {
+                background: linear-gradient(135deg, rgba(118, 185, 0, 0.1) 0%, rgba(0, 168, 107, 0.05) 100%);
+                border: 1px solid rgba(118, 185, 0, 0.3);
+            }
+            .stat-card {
+                @apply relative p-6 rounded-2xl transition-all duration-500;
+                background: rgba(255, 255, 255, 0.02);
+                border: 1px solid rgba(255, 255, 255, 0.06);
+            }
+            .stat-card:hover {
+                transform: translateY(-8px);
+                background: rgba(255, 255, 255, 0.04);
+                border-color: rgba(173, 198, 255, 0.3);
+            }
+            .magnetic-wrap {
+                @apply inline-block transition-transform duration-500 ease-out;
+            }
+            .section-title {
+                @apply font-headline text-4xl md:text-6xl font-bold tracking-tight text-white;
+            }
+            .animated-gradient {
+                background: linear-gradient(-45deg, #ADC6FF, #E9B3FF, #76B900, #ED1C24);
+                background-size: 300% 300%;
+                animation: gradient 10s ease infinite;
+            }
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-primary/30">
+
+<!-- Scroll Progress Bar -->
+<div id="scroll-progress" class="fixed top-0 left-0 h-1 bg-gradient-to-r from-primary via-secondary to-nvidia z-[1001] transition-all duration-100"></div>
+
+<!-- Parallax Background -->
+<div class="parallax-bg overflow-hidden" id="parallax-container">
+    <div class="glow-orb w-[700px] h-[700px] bg-primary top-[-10%] left-[-10%] animate-pulse-slow"></div>
+    <div class="glow-orb w-[800px] h-[800px] bg-secondary bottom-[5%] right-[-10%] animate-pulse-slow" style="animation-delay: 3s;"></div>
+    <div class="glow-orb w-[500px] h-[500px] bg-nvidia/20 top-[30%] right-[20%] animate-float"></div>
+    <div class="glow-orb w-[600px] h-[600px] bg-amd/15 bottom-[30%] left-[15%] animate-float" style="animation-delay: 2s;"></div>
+    <div class="absolute inset-0" id="particles-container"></div>
+</div>
+
+<!-- Navigation -->
+<nav class="navbar" id="navbar">
+    <div class="flex justify-between items-center w-full px-6 md:px-12 max-w-7xl mx-auto">
+        <a href="home.html" class="flex items-center gap-3 group">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg group-hover:shadow-primary/50 transition-all">
+                <span class="material-symbols-outlined text-surface text-xl">school</span>
+            </div>
+            <div class="text-xl font-black tracking-tighter text-gradient hidden lg:block">ИНДИВИДУАЛЬНЫЙ ПРОЕКТ</div>
+        </a>
+
+        <!-- Desktop Navigation -->
+        <div class="hidden lg:flex gap-6 items-center desktop-nav">
+            <a class="nav-link" href="#intro">Введение</a>
+            <a class="nav-link" href="#architectures">Архитектуры</a>
+            <a class="nav-link hover:text-nvidia" href="#dlss">DLSS</a>
+            <a class="nav-link hover:text-amd" href="#fsr">FSR</a>
+            <a class="nav-link hover:text-topaz" href="#topaz">Topaz</a>
+            <a class="nav-link" href="#applications">Применение</a>
+            <a class="nav-link" href="#stats">Статистика</a>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <a class="apple-button hidden md:block" href="home.html">
+                <span class="material-symbols-outlined text-xl mr-2">home</span>
+                На главную
+            </a>
+
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn md:hidden p-2 -mr-2" aria-label="Меню" aria-expanded="false" aria-controls="mobile-menu">
+                <span class="material-symbols-outlined text-2xl">menu</span>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu-overlay"></div>
+<div class="mobile-menu">
+    <div class="flex items-center gap-3 mb-8 pb-6 border-b border-white/10">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+            <span class="material-symbols-outlined text-surface text-xl">school</span>
+        </div>
+        <span class="text-lg font-bold text-white">ИНДИВИДУАЛЬНЫЙ ПРОЕКТ</span>
+    </div>
+    <nav class="flex flex-col gap-2">
+        <a class="text-lg font-semibold text-on-surface hover:text-primary transition-colors" href="#intro">📖 Введение</a>
+        <a class="text-lg font-semibold text-on-surface hover:text-primary transition-colors" href="#architectures">🧠 Архитектуры</a>
+        <a class="text-lg font-semibold text-on-surface hover:text-nvidia transition-colors" href="#dlss">💚 DLSS</a>
+        <a class="text-lg font-semibold text-on-surface hover:text-amd transition-colors" href="#fsr">❤️ FSR</a>
+        <a class="text-lg font-semibold text-on-surface hover:text-topaz transition-colors" href="#topaz">💠 Topaz</a>
+        <a class="text-lg font-semibold text-on-surface hover:text-primary transition-colors" href="#applications">💡 Применение</a>
+        <a class="text-lg font-semibold text-on-surface hover:text-primary transition-colors" href="#stats">📊 Статистика</a>
+        <a class="text-lg font-semibold text-on-surface hover:text-primary transition-colors" href="home.html">🏠 Главная</a>
+    </nav>
+</div>
+
+<main>
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden" id="hero">
+        <div class="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent pointer-events-none"></div>
+
+        <div class="max-w-6xl mx-auto px-6 text-center z-10 reveal active">
+            <!-- Badge -->
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-nvidia/30 bg-nvidia/10 mb-8 animate-float backdrop-blur-md">
+                <span class="w-2 h-2 rounded-full bg-nvidia animate-pulse"></span>
+                <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-nvidia">МГГТК АГУ • 09.02.07 ИС-12 • 2026</span>
+            </div>
+
+            <!-- Main Headline -->
+            <h1 class="font-headline text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tighter mb-8 leading-[1.1] text-white">
+                Нейросетевые технологии<br>
+                <span class="text-gradient">генерации и улучшения</span><br>
+                изображений и видео
+            </h1>
+
+            <!-- Description -->
+            <p class="text-on-surface-variant text-lg md:text-xl lg:text-2xl max-w-4xl mx-auto mb-6 font-light leading-relaxed">
+                Полная версия проекта: детальное исследование современных методов искусственного интеллекта для повышения качества визуального контента
+            </p>
+            
+            <p class="text-on-surface-variant text-sm md:text-base max-w-2xl mx-auto mb-12 font-light">
+                От классических CNN до современных Transformer-моделей — полный обзор технологий, меняющих индустрии
+            </p>
+
+            <!-- CTA Buttons -->
+            <div class="flex flex-wrap justify-center gap-4 mb-16">
+                <div class="magnetic-wrap">
+                    <a class="magnetic-btn apple-button apple-button-lg" href="#intro">
+                        <span class="material-symbols-outlined text-sm mr-2">auto_stories</span>
+                        Начать изучение
+                    </a>
+                </div>
+                <div class="magnetic-wrap">
+                    <a class="magnetic-btn px-10 py-4 rounded-full border border-white/20 font-bold text-lg hover:bg-white/10 hover:border-primary/50 transition-all inline-block text-white group" href="#dlss">
+                        <span class="material-symbols-outlined text-sm mr-2 group-hover:rotate-12 transition-transform">smart_display</span>
+                        Технологии
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
+                <div class="glass-card p-6 rounded-2xl reveal stagger-item stat-card cursor-default">
+                    <div class="text-3xl md:text-4xl font-black text-gradient-nvidia mb-2">до 6x</div>
+                    <div class="text-xs uppercase tracking-widest text-on-surface-variant">Прирост FPS</div>
+                </div>
+                <div class="glass-card p-6 rounded-2xl reveal stagger-item stat-card cursor-default">
+                    <div class="text-3xl md:text-4xl font-black text-gradient mb-2">8K</div>
+                    <div class="text-xs uppercase tracking-widest text-on-surface-variant">Разрешение</div>
+                </div>
+                <div class="glass-card p-6 rounded-2xl reveal stagger-item stat-card cursor-default">
+                    <div class="text-3xl md:text-4xl font-black text-gradient mb-2">100+</div>
+                    <div class="text-xs uppercase tracking-widest text-on-surface-variant">Игр с DLSS</div>
+                </div>
+                <div class="glass-card p-6 rounded-2xl reveal stagger-item stat-card cursor-default">
+                    <div class="text-3xl md:text-4xl font-black text-gradient mb-2">AI</div>
+                    <div class="text-xs uppercase tracking-widest text-on-surface-variant">Технологии</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 opacity-30 animate-float">
+            <div class="flex flex-col items-center gap-2">
+                <span class="text-[10px] uppercase tracking-widest text-on-surface-variant">Листайте вниз</span>
+                <span class="material-symbols-outlined text-3xl">expand_more</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Introduction Section -->
+    <section class="py-24 md:py-32 px-6 relative" id="intro">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <span class="text-primary tracking-[0.3em] uppercase font-bold text-[10px] mb-4 block">Введение</span>
+                <h2 class="section-title mb-6">Паспорт проекта</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+                <!-- Актуальность -->
+                <div class="glass-card p-8 rounded-[2rem] reveal group">
+                    <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 border border-primary/20 icon-bounce">
+                        <span class="material-symbols-outlined text-primary text-3xl">trending_up</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4 text-white">Актуальность</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed font-light">
+                        Современные игры и видеоконтент требуют огромных вычислительных ресурсов. Нейросети позволяют автоматизировать улучшение качества, повышать FPS и снижать нагрузку на оборудование без потери визуального качества.
+                    </p>
+                </div>
+
+                <!-- Цель -->
+                <div class="glass-card p-8 rounded-[2rem] reveal border-nvidia/30 bg-nvidia/5 group">
+                    <div class="w-14 h-14 rounded-2xl bg-nvidia/10 flex items-center justify-center mb-6 border border-nvidia/20 icon-bounce">
+                        <span class="material-symbols-outlined text-nvidia text-3xl">target</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4 text-white">Цель работы</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed font-light">
+                        <strong class="text-white">Исследовать</strong> современные нейросетевые технологии генерации и улучшения изображений, <strong class="text-white">проанализировать</strong> их принципы работы, архитектуры и эффективность в различных областях применения.
+                    </p>
+                </div>
+
+                <!-- Задачи -->
+                <div class="glass-card p-8 rounded-[2rem] reveal group">
+                    <div class="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center mb-6 border border-secondary/20 icon-bounce">
+                        <span class="material-symbols-outlined text-secondary text-3xl">task_alt</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4 text-white">Задачи</h3>
+                    <ul class="space-y-3 text-on-surface-variant text-sm font-light">
+                        <li class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-primary text-sm mt-0.5 flex-shrink-0">check_circle</span>
+                            <span>Изучить архитектуры нейросетей для обработки изображений (CNN, GAN, Transformer)</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-primary text-sm mt-0.5 flex-shrink-0">check_circle</span>
+                            <span>Рассмотреть технологии DLSS, FSR, XeSS и их эволюцию</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-primary text-sm mt-0.5 flex-shrink-0">check_circle</span>
+                            <span>Проанализировать Topaz Video AI для профессиональной обработки видео</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-primary text-sm mt-0.5 flex-shrink-0">check_circle</span>
+                            <span>Исследовать области применения в играх, кино, медицине и науке</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Project Info Box -->
+            <div class="glass-card p-8 md:p-12 rounded-[2.5rem] reveal border-primary/20">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="font-headline text-2xl md:text-3xl font-bold text-white mb-6">Информация о проекте</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
+                                <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-primary text-xl">school</span>
+                                </div>
+                                <div>
+                                    <div class="text-white font-semibold text-sm">Учебное заведение</div>
+                                    <div class="text-on-surface-variant text-xs">МГГТК АГУ, г. Майкоп</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
+                                <div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-secondary text-xl">code</span>
+                                </div>
+                                <div>
+                                    <div class="text-white font-semibold text-sm">Специальность</div>
+                                    <div class="text-on-surface-variant text-xs">09.02.07 Информационные системы</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
+                                <div class="w-10 h-10 rounded-lg bg-nvidia/10 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-nvidia text-xl">group</span>
+                                </div>
+                                <div>
+                                    <div class="text-white font-semibold text-sm">Группа</div>
+                                    <div class="text-on-surface-variant text-xs">ИС-12</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-center">
+                        <div class="relative w-56 h-56">
+                            <div class="absolute inset-0 rounded-full border-2 border-primary/20 animate-spin-slow"></div>
+                            <div class="absolute inset-6 rounded-full border-2 border-secondary/20 animate-spin-slow" style="animation-direction: reverse; animation-duration: 15s;"></div>
+                            <div class="absolute inset-16 rounded-full border-2 border-primary/30 animate-spin-slow"></div>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-28 h-28 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/30">
+                                    <span class="material-symbols-outlined text-6xl text-surface">school</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Neural Network Architectures Section -->
+    <section class="py-24 md:py-32 px-6 bg-surface-container/50 relative overflow-hidden" id="architectures">
+        <!-- Decorative elements -->
+        <div class="absolute top-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <span class="text-primary tracking-[0.3em] uppercase font-bold text-[10px] mb-4 block">Архитектуры нейросетей</span>
+                <h2 class="section-title mb-6">Ключевые модели</h2>
+                <p class="text-on-surface-variant text-xl font-light max-w-3xl mx-auto">
+                    Фундаментальные архитектуры, лежащие в основе современных технологий обработки изображений
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+                <!-- CNN -->
+                <div class="glass-card p-8 rounded-[2rem] reveal group">
+                    <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 border border-primary/20 icon-bounce">
+                        <span class="material-symbols-outlined text-primary text-3xl">view_comfy</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4 text-white">CNN</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed font-light mb-4">
+                        Свёрточные нейронные сети (Convolutional Neural Networks) — фундамент для анализа изображений. Используют операции свёрки для выявления локальных признаков: краёв, текстур, паттернов.
+                    </p>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+                            <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                            Классификация изображений
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+                            <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                            Детекция объектов
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+                            <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                            Сегментация
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GAN -->
+                <div class="glass-card p-8 rounded-[2rem] reveal group">
+                    <div class="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center mb-6 border border-secondary/20 icon-bounce">
+                        <span class="material-symbols-outlined text-secondary text-3xl">auto_awesome</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4 text-white">GAN</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed font-light mb-4">
+                        Генеративно-состязательные сети (Generative Adversarial Networks) состоят из генератора и дискриминатора, соревнующихся друг с другом. Создают фотореалистичные изображения.
+                    </p>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+                            <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            Генерация контента
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+                            <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            Стилевой перенос
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+                            <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            Super-Resolution
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Автоэнкодеры -->
+                <div class="glass-card p-8 rounded-[2rem] reveal group">
+                    <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 border border-primary/20 icon-bounce">
+                        <span class="material-symbols-outlined text-primary text-3xl">compress</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4 text-white">Автоэнкодеры</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed font-light mb-4">
+                        Нейросети для эффективного кодирования данных в сжатое представление (латентный вектор) и последующего восстановления. VAE — вариационные автоэнкодеры.
+                    </p>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+                            <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                            Сжатие данных
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+                            <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                            Шумоподавление
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+                            <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                            Реконструкция
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transformer -->
+                <div class="glass-card p-8 rounded-[2rem] reveal group">
+                    <div class="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center mb-6 border border-secondary/20 icon-bounce">
+                        <span class="material-symbols-outlined text-secondary text-3xl">transform</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4 text-white">Transformer</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed font-light mb-4">
+                        Vision Transformer (ViT) разбивает изображение на патчи и анализирует глобальные контекстные связи между ними с помощью механизма внимания.
+                    </p>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+                            <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            Механизм внимания
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+                            <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            Глобальный контекст
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+                            <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            DLSS 4+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Info -->
+            <div class="glass-card p-8 md:p-12 rounded-[2.5rem] reveal border-primary/20">
+                <h3 class="font-headline text-2xl md:text-3xl font-bold text-white mb-8 text-center">Применение архитектур</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group cursor-default">
+                        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 border border-primary/20 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-primary text-2xl">view_comfy</span>
+                        </div>
+                        <h4 class="text-white font-bold mb-2">CNN в действии</h4>
+                        <p class="text-on-surface-variant text-xs font-light">Анализ каждого кадра, распознавание объектов, определение границ и текстур для последующей обработки.</p>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group cursor-default">
+                        <div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center mb-4 border border-secondary/20 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-secondary text-2xl">auto_awesome</span>
+                        </div>
+                        <h4 class="text-white font-bold mb-2">GAN для генерации</h4>
+                        <p class="text-on-surface-variant text-xs font-light">Создание промежуточных кадров, генерация текстур, восстановление утраченных деталей.</p>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group cursor-default">
+                        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 border border-primary/20 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-primary text-2xl">compress</span>
+                        </div>
+                        <h4 class="text-white font-bold mb-2">Автоэнкодеры</h4>
+                        <p class="text-on-surface-variant text-xs font-light">Эффективное сжатие видеопотока, удаление шумов, восстановление после сжатия.</p>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group cursor-default">
+                        <div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center mb-4 border border-secondary/20 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-secondary text-2xl">transform</span>
+                        </div>
+                        <h4 class="text-white font-bold mb-2">Transformer</h4>
+                        <p class="text-on-surface-variant text-xs font-light">Анализ глобальных зависимостей между кадрами, предсказание движения объектов.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DLSS Section -->
+    <section class="py-24 md:py-32 px-6 relative" id="dlss">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <span class="dlss-badge mb-6">
+                    <span class="material-symbols-outlined text-sm">verified</span>
+                    NVIDIA
+                </span>
+                <h2 class="section-title mb-6">
+                    <span class="text-gradient-nvidia">DLSS</span> — Deep Learning Super Sampling
+                </h2>
+                <p class="text-on-surface-variant text-xl max-w-3xl mx-auto">
+                    Революционная технология нейронного рендеринга от NVIDIA, использующая тензорные ядра RTX для масштабирования изображений в реальном времени
+                </p>
+            </div>
+
+            <!-- DLSS How It Works -->
+            <div class="glass-card p-8 md:p-12 rounded-[2.5rem] reveal mb-16">
+                <h3 class="font-headline text-2xl md:text-3xl font-bold text-white mb-8 text-center">Как работает DLSS</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <div class="w-20 h-20 mx-auto mb-4 rounded-2xl bg-nvidia/10 flex items-center justify-center border-2 border-nvidia/30">
+                            <span class="material-symbols-outlined text-nvidia text-4xl">visibility</span>
+                        </div>
+                        <h4 class="text-white font-bold text-lg mb-2">1. Рендеринг</h4>
+                        <p class="text-on-surface-variant text-sm font-light">Игра рендерится в низком разрешении для снижения нагрузки на GPU</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-20 h-20 mx-auto mb-4 rounded-2xl bg-nvidia/10 flex items-center justify-center border-2 border-nvidia/30">
+                            <span class="material-symbols-outlined text-nvidia text-4xl">psychology</span>
+                        </div>
+                        <h4 class="text-white font-bold text-lg mb-2">2. AI-анализ</h4>
+                        <p class="text-on-surface-variant text-sm font-light">Нейросеть анализирует кадр и данные предыдущих кадров</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-20 h-20 mx-auto mb-4 rounded-2xl bg-nvidia/10 flex items-center justify-center border-2 border-nvidia/30">
+                            <span class="material-symbols-outlined text-nvidia text-4xl">high_quality</span>
+                        </div>
+                        <h4 class="text-white font-bold text-lg mb-2">3. Реконструкция</h4>
+                        <p class="text-on-surface-variant text-sm font-light">ИИ восстанавливает детали и выводит изображение в целевом разрешении</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DLSS Versions -->
+            <div class="mb-16">
+                <h3 class="font-headline text-2xl md:text-3xl font-bold text-white mb-8 text-center reveal">Эволюция DLSS</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="version-card reveal group">
+                        <div class="text-nvidia font-black text-4xl mb-3">2.0</div>
+                        <h4 class="font-bold mb-3 text-white">DLSS 2</h4>
+                        <ul class="space-y-2 text-on-surface-variant text-xs">
+                            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-nvidia text-xs">check</span>Super Resolution</li>
+                            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-nvidia text-xs">check</span>CNN-модель</li>
+                            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-nvidia text-xs">check</span>+50-100% FPS</li>
+                        </ul>
+                        <div class="mt-4 pt-4 border-t border-white/5 text-[10px] text-on-surface-variant">Все RTX</div>
+                    </div>
+                    <div class="version-card reveal border-nvidia/30 bg-nvidia/5 group">
+                        <div class="text-nvidia font-black text-4xl mb-3">3.0</div>
+                        <h4 class="font-bold mb-3 text-white">DLSS 3</h4>
+                        <ul class="space-y-2 text-on-surface-variant text-xs">
+                            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-nvidia text-xs">check</span>Frame Generation</li>
+                            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-nvidia text-xs">check</span>Оптический поток</li>
+                            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-nvidia text-xs">check</span>+200-300% FPS</li>
+                        </ul>
+                        <div class="mt-4 pt-4 border-t border-white/5 text-[10px] text-on-surface-variant">RTX 40</div>
+                    </div>
+                    <div class="version-card reveal group">
+                        <div class="text-nvidia font-black text-4xl mb-3">3.5</div>
+                        <h4 class="font-bold mb-3 text-white">DLSS 3.5</h4>
+                        <ul class="space-y-2 text-on-surface-variant text-xs">
+                            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-nvidia text-xs">check</span>Ray Reconstruction</li>
+                            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-nvidia text-xs">check</span>AI-денуазинг</li>
+                            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-nvidia text-xs">check</span>Улучшенный RT</li>
+                        </ul>
+                        <div class="mt-4 pt-4 border-t border-white/5 text-[10px] text-on-surface-variant">Все RTX</div>
+                    </div>
+                    <div class="version-card reveal border-nvidia/30 bg-nvidia/5 group">
+                        <div class="text-nvidia font-black text-4xl mb-3">4.0</div>
+                        <h4 class="font-bold mb-3 text-white">DLSS 4</h4>
+                        <ul class="space-y-2 text-on-surface-variant text-xs">
+                            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-nvidia text-xs">check</span>Multi Frame Gen</li>
+                            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-nvidia text-xs">check</span>Transformer-модель</li>
+                            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-nvidia text-xs">check</span>до 4 кадров AI</li>
+                        </ul>
+                        <div class="mt-4 pt-4 border-t border-white/5 text-[10px] text-nvidia font-bold">RTX 50</div>
+                    </div>
+                    <div class="version-card reveal dlss-5 group">
+                        <div class="absolute top-0 right-0 px-3 py-1 bg-nvidia/20 rounded-bl-2xl">
+                            <span class="text-[10px] text-nvidia font-bold flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-nvidia animate-pulse"></span>
+                                НОВОЕ
+                            </span>
+                        </div>
+                        <div class="text-nvidia font-black text-4xl mb-3">5.0</div>
+                        <h4 class="font-bold mb-3 text-white">DLSS 5</h4>
+                        <ul class="space-y-2 text-on-surface-variant text-xs">
+                            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-nvidia text-xs">check</span>Dynamic MFG</li>
+                            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-nvidia text-xs">check</span>Transformer v2</li>
+                            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-nvidia text-xs">check</span>до 6x FPS</li>
+                        </ul>
+                        <div class="mt-4 pt-4 border-t border-white/5 text-[10px] text-nvidia font-bold">RTX 50</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison Slider -->
+            <div class="reveal">
+                <h3 class="font-headline text-2xl font-bold text-white mb-8 text-center">Сравнение качества</h3>
+                <div class="relative w-full aspect-video rounded-[2rem] overflow-hidden glass-card group" id="dlss-comparison">
+                    <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1600&h=900&fit=crop" class="absolute inset-0 w-full h-full object-cover" alt="С DLSS"/>
+                    <div class="absolute bottom-4 right-4 dlss-badge">
+                        <span class="material-symbols-outlined text-xs">check</span>
+                        С DLSS 4
+                    </div>
+                    <div class="absolute inset-0 overflow-hidden" id="before-container" style="clip-path: inset(0 50% 0 0);">
+                        <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1600&h=900&fit=crop" class="absolute inset-0 w-full h-full object-cover filter blur-[2px] brightness-75" alt="Без DLSS"/>
+                        <div class="absolute bottom-4 left-4 bg-black/60 px-4 py-1.5 rounded-full text-[10px] font-bold backdrop-blur-md">Без DLSS</div>
+                    </div>
+                    <div class="slider-handle" id="slider-handle">
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-2xl">
+                            <span class="material-symbols-outlined text-lg">unfold_more_double</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FSR Section -->
+    <section class="py-24 md:py-32 px-6 bg-surface-container/50 relative" id="fsr">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <span class="fsr-badge mb-6">
+                    <span class="material-symbols-outlined text-sm">open_in_full</span>
+                    AMD
+                </span>
+                <h2 class="section-title mb-6">
+                    <span class="text-gradient-amd">AMD FSR</span> — FidelityFX Super Resolution
+                </h2>
+                <p class="text-on-surface-variant text-xl max-w-3xl mx-auto">
+                    Открытая технология масштабирования для всех видеокарт — от AMD, NVIDIA и Intel
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+                <!-- How FSR Works -->
+                <div class="glass-card p-8 rounded-[2.5rem] reveal">
+                    <h3 class="font-headline text-2xl font-bold text-white mb-6">Как работает FSR</h3>
+                    <div class="space-y-6">
+                        <div class="flex gap-4 group">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amd/20 flex items-center justify-center border border-amd/30 group-hover:scale-110 group-hover:bg-amd/30 transition-all">
+                                <span class="text-white font-bold">1</span>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-bold mb-1">Анализ кадра</h4>
+                                <p class="text-sm text-on-surface-variant">Алгоритм анализирует изображение в низком разрешении, определяя края, текстуры и детали.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 group">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amd/20 flex items-center justify-center border border-amd/30 group-hover:scale-110 group-hover:bg-amd/30 transition-all">
+                                <span class="text-white font-bold">2</span>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-bold mb-1">Масштабирование</h4>
+                                <p class="text-sm text-on-surface-variant">Продвинутые алгоритмы (EASU, RCAS) масштабируют изображение до целевого разрешения.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 group">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amd/20 flex items-center justify-center border border-amd/30 group-hover:scale-110 group-hover:bg-amd/30 transition-all">
+                                <span class="text-white font-bold">3</span>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-bold mb-1">Улучшение</h4>
+                                <p class="text-sm text-on-surface-variant">Применяется sharpening для подчёркивания деталей и улучшения чёткости.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FSR Versions -->
+                <div class="space-y-4 reveal">
+                    <div class="glass-card p-6 rounded-[2rem] group hover:border-amd/30 transition-all">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-white font-bold text-lg">FSR 1.0</h4>
+                            <span class="text-xs text-amd font-bold">2021</span>
+                        </div>
+                        <p class="text-on-surface-variant text-sm font-light mb-3">Пространственное масштабирование. Базовое улучшение качества без использования данных предыдущих кадров.</p>
+                        <div class="flex gap-2">
+                            <span class="px-2 py-1 rounded bg-amd/10 border border-amd/20 text-xs text-amd">Все GPU</span>
+                            <span class="px-2 py-1 rounded bg-amd/10 border border-amd/20 text-xs text-amd">Spatial</span>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6 rounded-[2rem] border-amd/30 bg-amd/5 group">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-white font-bold text-lg">FSR 2.0/2.1</h4>
+                            <span class="text-xs text-amd font-bold">2022</span>
+                        </div>
+                        <p class="text-on-surface-variant text-sm font-light mb-3">Временное масштабирование. Использует данные предыдущих кадров для лучшего качества.</p>
+                        <div class="flex gap-2">
+                            <span class="px-2 py-1 rounded bg-amd/10 border border-amd/20 text-xs text-amd">Все GPU</span>
+                            <span class="px-2 py-1 rounded bg-amd/10 border border-amd/20 text-xs text-amd">Temporal</span>
+                            <span class="px-2 py-1 rounded bg-amd/10 border border-amd/20 text-xs text-amd">+100% FPS</span>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6 rounded-[2rem] group hover:border-amd/30 transition-all">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-white font-bold text-lg">FSR 3.0</h4>
+                            <span class="text-xs text-amd font-bold">2023</span>
+                        </div>
+                        <p class="text-on-surface-variant text-sm font-light mb-3">Генерация кадров (Fluid Motion Frames). Создаёт промежуточные кадры для плавности.</p>
+                        <div class="flex gap-2">
+                            <span class="px-2 py-1 rounded bg-amd/10 border border-amd/20 text-xs text-amd">Все GPU</span>
+                            <span class="px-2 py-1 rounded bg-amd/10 border border-amd/20 text-xs text-amd">Frame Gen</span>
+                            <span class="px-2 py-1 rounded bg-amd/10 border border-amd/20 text-xs text-amd">до 3x FPS</span>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6 rounded-[2rem] border-amd/30 bg-amd/5 group">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-white font-bold text-lg">FSR 4.0</h4>
+                            <span class="text-xs text-amd font-bold">2025</span>
+                        </div>
+                        <p class="text-on-surface-variant text-sm font-light mb-3">AI-модель на базе машинного обучения. Требует GPU AMD RDNA 4 (RX 9000 серия).</p>
+                        <div class="flex gap-2">
+                            <span class="px-2 py-1 rounded bg-amd/10 border border-amd/20 text-xs text-amd">RX 9000</span>
+                            <span class="px-2 py-1 rounded bg-amd/10 border border-amd/20 text-xs text-amd">AI-модель</span>
+                            <span class="px-2 py-1 rounded bg-amd/10 border border-amd/20 text-xs text-amd">до 4x FPS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison Table -->
+            <div class="glass-card p-8 rounded-[2.5rem] reveal overflow-hidden">
+                <h3 class="font-headline text-2xl font-bold text-white mb-8 text-center">Сравнение технологий</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full" style="table-layout: fixed;">
+                        <colgroup>
+                            <col style="width: 35%;">
+                            <col style="width: 32.5%;">
+                            <col style="width: 32.5%;">
+                        </colgroup>
+                        <thead>
+                            <tr style="border-bottom: 2px solid rgba(255,255,255,0.1);">
+                                <th class="text-left py-4 px-4 text-on-surface-variant text-xs uppercase tracking-widest">Характеристика</th>
+                                <th class="text-center py-4 px-4" style="color: #76B900; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em;">NVIDIA DLSS</th>
+                                <th class="text-center py-4 px-4" style="color: #ED1C24; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em;">AMD FSR</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);" class="hover:bg-white/5 transition-colors">
+                                <td class="py-4 px-4 text-white text-sm">Совместимость</td>
+                                <td class="py-4 px-4 text-center text-sm text-on-surface-variant">Только RTX 20/30/40/50</td>
+                                <td class="py-4 px-4 text-center text-sm text-on-surface-variant">Все GPU (AMD, NVIDIA, Intel)</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);" class="hover:bg-white/5 transition-colors">
+                                <td class="py-4 px-4 text-white text-sm">Тип технологии</td>
+                                <td class="py-4 px-4 text-center text-sm text-on-surface-variant">ИИ (Tensor Cores)</td>
+                                <td class="py-4 px-4 text-center text-sm text-on-surface-variant">Алгоритмы + ИИ (FSR 4)</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);" class="hover:bg-white/5 transition-colors">
+                                <td class="py-4 px-4 text-white text-sm">Макс. прирост FPS</td>
+                                <td class="py-4 px-4 text-center text-sm font-bold" style="color: #E9B3FF;">до 6x (DLSS 5)</td>
+                                <td class="py-4 px-4 text-center text-sm font-bold" style="color: #ED1C24;">до 4x (FSR 4)</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);" class="hover:bg-white/5 transition-colors">
+                                <td class="py-4 px-4 text-white text-sm">Генерация кадров</td>
+                                <td class="py-4 px-4 text-center text-sm text-on-surface-variant">До 4 кадров (Multi Frame)</td>
+                                <td class="py-4 px-4 text-center text-sm text-on-surface-variant">До 3 кадров (FMF)</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);" class="hover:bg-white/5 transition-colors">
+                                <td class="py-4 px-4 text-white text-sm">Исходный код</td>
+                                <td class="py-4 px-4 text-center text-sm text-on-surface-variant">Закрытый</td>
+                                <td class="py-4 px-4 text-center text-sm text-on-surface-variant">Открытый (Open Source)</td>
+                            </tr>
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="py-4 px-4 text-white text-sm">Игр в поддержке</td>
+                                <td class="py-4 px-4 text-center text-sm font-bold" style="color: #E9B3FF;">100+</td>
+                                <td class="py-4 px-4 text-center text-sm font-bold" style="color: #ED1C24;">150+</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Topaz Video AI Section -->
+    <section class="py-24 md:py-32 px-6 relative" id="topaz">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <span class="topaz-badge mb-6">
+                    <span class="material-symbols-outlined text-sm">video_library</span>
+                    Topaz Labs
+                </span>
+                <h2 class="section-title mb-6">
+                    <span class="text-gradient-topaz">Topaz Video AI</span>
+                </h2>
+                <p class="text-on-surface-variant text-xl max-w-3xl mx-auto">
+                    Профессиональное ПО для улучшения качества видео с помощью искусственного интеллекта
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                <div class="glass-card p-8 rounded-[2.5rem] reveal group">
+                    <div class="w-16 h-16 rounded-2xl bg-topaz/10 flex items-center justify-center mb-6 border border-topaz/20 icon-bounce">
+                        <span class="material-symbols-outlined text-topaz text-4xl">high_quality</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4 text-white">Повышение разрешения</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed font-light mb-4">
+                        Увеличение качества видео до 8K с сохранением деталей. Идеально для ремастеринга старых записей.
+                    </p>
+                    <div class="text-topaz text-sm font-bold flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">trending_up</span>
+                        до 8K выход
+                    </div>
+                </div>
+                <div class="glass-card p-8 rounded-[2.5rem] reveal group">
+                    <div class="w-16 h-16 rounded-2xl bg-topaz/10 flex items-center justify-center mb-6 border border-topaz/20 icon-bounce">
+                        <span class="material-symbols-outlined text-topaz text-4xl">blur_off</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4 text-white">Удаление шумов</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed font-light mb-4">
+                        Интеллектуальное удаление цифрового шума и артефактов сжатия с сохранением деталей.
+                    </p>
+                    <div class="text-topaz text-sm font-bold flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">cleaning_services</span>
+                        AI Denoise
+                    </div>
+                </div>
+                <div class="glass-card p-8 rounded-[2.5rem] reveal group">
+                    <div class="w-16 h-16 rounded-2xl bg-topaz/10 flex items-center justify-center mb-6 border border-topaz/20 icon-bounce">
+                        <span class="material-symbols-outlined text-topaz text-4xl">slow_motion_video</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4 text-white">Интерполяция кадров</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed font-light mb-4">
+                        Генерация промежуточных кадров для плавного slow-motion и повышения FPS до 120.
+                    </p>
+                    <div class="text-topaz text-sm font-bold flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">60fps</span>
+                        до 120 FPS
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Models -->
+            <div class="glass-card p-8 md:p-12 rounded-[2.5rem] reveal">
+                <h3 class="font-headline text-2xl md:text-3xl font-bold text-white mb-8 text-center">AI-модели Topaz</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-topaz/30 transition-all group cursor-default">
+                        <div class="text-topaz font-bold text-lg mb-2 group-hover:text-topaz/80 transition-colors">Proteus</div>
+                        <p class="text-on-surface-variant text-sm font-light mb-4">Универсальная модель для повышения разрешения с тонкой настройкой параметров.</p>
+                        <span class="text-xs text-topaz font-bold flex items-center gap-1">
+                            <span class="material-symbols-outlined text-xs">tune</span>
+                            Refine + Recover
+                        </span>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-topaz/30 transition-all group cursor-default">
+                        <div class="text-topaz font-bold text-lg mb-2 group-hover:text-topaz/80 transition-colors">Artemis</div>
+                        <p class="text-on-surface-variant text-sm font-light mb-4">Для удаления шумов и артефактов сжатия. Восстанавливает чистоту изображения.</p>
+                        <span class="text-xs text-topaz font-bold flex items-center gap-1">
+                            <span class="material-symbols-outlined text-xs">cleaning_services</span>
+                            Denoise + Deband
+                        </span>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-topaz/30 transition-all group cursor-default">
+                        <div class="text-topaz font-bold text-lg mb-2 group-hover:text-topaz/80 transition-colors">Athena</div>
+                        <p class="text-on-surface-variant text-sm font-light mb-4">Для улучшения старого и повреждённого контента. Реставрация архивов.</p>
+                        <span class="text-xs text-topaz font-bold flex items-center gap-1">
+                            <span class="material-symbols-outlined text-xs">history_edu</span>
+                            Restoration
+                        </span>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-topaz/30 transition-all group cursor-default">
+                        <div class="text-topaz font-bold text-lg mb-2 group-hover:text-topaz/80 transition-colors">Chronos</div>
+                        <p class="text-on-surface-variant text-sm font-light mb-4">Для интерполяции кадров и создания плавного slow-motion видео.</p>
+                        <span class="text-xs text-topaz font-bold flex items-center gap-1">
+                            <span class="material-symbols-outlined text-xs">slow_motion_video</span>
+                            Frame Interpolation
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Applications Section -->
+    <section class="py-24 md:py-32 px-6 bg-surface-container/50 relative" id="applications">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <span class="text-primary tracking-[0.3em] uppercase font-bold text-[10px] mb-4 block">Практическое применение</span>
+                <h2 class="section-title mb-6">Где применяются технологии?</h2>
+                <p class="text-on-surface-variant text-xl font-light max-w-2xl mx-auto">
+                    От развлечений до науки — нейросети трансформируют индустрии
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Games -->
+                <div class="glass-card p-8 rounded-[2.5rem] reveal group">
+                    <div class="w-16 h-16 rounded-2xl bg-nvidia/10 flex items-center justify-center mb-6 border border-nvidia/20 group-hover:scale-110 group-hover:bg-nvidia/20 transition-all">
+                        <span class="material-symbols-outlined text-nvidia text-4xl">videogame_asset</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4 text-white">Видеоигры</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed font-light mb-6">
+                        Повышение FPS в 2-6 раз без потери качества. Возможность играть в 4K на доступном оборудовании с трассировкой лучей.
+                    </p>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-nvidia text-sm">check_circle</span>
+                            <span class="text-sm text-on-surface-variant">Cyberpunk 2077, Alan Wake 2</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-nvidia text-sm">check_circle</span>
+                            <span class="text-sm text-on-surface-variant">Microsoft Flight Simulator</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-nvidia text-sm">check_circle</span>
+                            <span class="text-sm text-on-surface-variant">Black Myth: Wukong</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cinema -->
+                <div class="glass-card p-8 rounded-[2.5rem] reveal group">
+                    <div class="w-16 h-16 rounded-2xl bg-topaz/10 flex items-center justify-center mb-6 border border-topaz/20 group-hover:scale-110 group-hover:bg-topaz/20 transition-all">
+                        <span class="material-symbols-outlined text-topaz text-4xl">movie</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4 text-white">Киноиндустрия</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed font-light mb-6">
+                        Реставрация классических фильмов. Повышение разрешения архивных записей до 4K/8K. Создание VFX.
+                    </p>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-topaz text-sm">check_circle</span>
+                            <span class="text-sm text-on-surface-variant">Ремастеринг фильмов</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-topaz text-sm">check_circle</span>
+                            <span class="text-sm text-on-surface-variant">Восстановление архивов</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-topaz text-sm">check_circle</span>
+                            <span class="text-sm text-on-surface-variant">VFX и постпродакшн</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medicine -->
+                <div class="glass-card p-8 rounded-[2.5rem] reveal group">
+                    <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 border border-primary/20 group-hover:scale-110 group-hover:bg-primary/20 transition-all">
+                        <span class="material-symbols-outlined text-primary text-4xl">health_and_safety</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4 text-white">Медицина</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed font-light mb-6">
+                        Улучшение качества МРТ, КТ, рентгеновских снимков. Повышение точности диагностики заболеваний.
+                    </p>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary text-sm">check_circle</span>
+                            <span class="text-sm text-on-surface-variant">Улучшение МРТ/КТ</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary text-sm">check_circle</span>
+                            <span class="text-sm text-on-surface-variant">Анализ снимков</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary text-sm">check_circle</span>
+                            <span class="text-sm text-on-surface-variant">Ранняя диагностика</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Streaming -->
+                <div class="glass-card p-8 rounded-[2.5rem] reveal group">
+                    <div class="w-16 h-16 rounded-2xl bg-secondary/10 flex items-center justify-center mb-6 border border-secondary/20 group-hover:scale-110 group-hover:bg-secondary/20 transition-all">
+                        <span class="material-symbols-outlined text-secondary text-4xl">live_tv</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4 text-white">Стриминговые платформы</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed font-light mb-6">
+                        Снижение битрейта при сохранении качества. Улучшение пользовательского опыта при просмотре.
+                    </p>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-secondary text-sm">check_circle</span>
+                            <span class="text-sm text-on-surface-variant">NVIDIA Maxine</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-secondary text-sm">check_circle</span>
+                            <span class="text-sm text-on-surface-variant">Снижение трафика</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-secondary text-sm">check_circle</span>
+                            <span class="text-sm text-on-surface-variant">Улучшение веб-камер</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Education -->
+                <div class="glass-card p-8 rounded-[2.5rem] reveal group">
+                    <div class="w-16 h-16 rounded-2xl bg-nvidia/10 flex items-center justify-center mb-6 border border-nvidia/20 group-hover:scale-110 group-hover:bg-nvidia/20 transition-all">
+                        <span class="material-symbols-outlined text-nvidia text-4xl">school</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4 text-white">Образование</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed font-light mb-6">
+                        Создание интерактивных материалов. Визуализация сложных концепций. VR/AR приложения для обучения.
+                    </p>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-nvidia text-sm">check_circle</span>
+                            <span class="text-sm text-on-surface-variant">VR/AR симуляции</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-nvidia text-sm">check_circle</span>
+                            <span class="text-sm text-on-surface-variant">3D визуализация</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-nvidia text-sm">check_circle</span>
+                            <span class="text-sm text-on-surface-variant">Онлайн-курсы</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Science -->
+                <div class="glass-card p-8 rounded-[2.5rem] reveal group">
+                    <div class="w-16 h-16 rounded-2xl bg-topaz/10 flex items-center justify-center mb-6 border border-topaz/20 group-hover:scale-110 group-hover:bg-topaz/20 transition-all">
+                        <span class="material-symbols-outlined text-topaz text-4xl">satellite</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4 text-white">Наука и исследования</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed font-light mb-6">
+                        Обработка спутниковых снимков. Улучшение данных микроскопии. Анализ астрономических изображений.
+                    </p>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-topaz text-sm">check_circle</span>
+                            <span class="text-sm text-on-surface-variant">Спутниковые данные</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-topaz text-sm">check_circle</span>
+                            <span class="text-sm text-on-surface-variant">Микроскопия</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-topaz text-sm">check_circle</span>
+                            <span class="text-sm text-on-surface-variant">Астрономия</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="py-24 md:py-32 px-6 relative" id="stats">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <span class="text-primary tracking-[0.3em] uppercase font-bold text-[10px] mb-4 block">Данные исследований</span>
+                <h2 class="section-title mb-6">Статистика производительности</h2>
+                <p class="text-on-surface-variant text-xl font-light max-w-2xl mx-auto">
+                    Реальные показатели прироста производительности в играх и приложениях
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+                <div class="glass-card p-8 rounded-[2rem] reveal text-center stat-card">
+                    <div class="text-4xl md:text-5xl font-black text-gradient-nvidia mb-4">до 600%</div>
+                    <div class="text-xs uppercase tracking-widest text-on-surface-variant mb-2">Прирост FPS</div>
+                    <p class="text-on-surface-variant text-xs font-light">С DLSS 5 Multi Frame</p>
+                </div>
+                <div class="glass-card p-8 rounded-[2rem] reveal text-center stat-card">
+                    <div class="text-4xl md:text-5xl font-black text-gradient mb-4">98%</div>
+                    <div class="text-xs uppercase tracking-widest text-on-surface-variant mb-2">Схожесть</div>
+                    <p class="text-on-surface-variant text-xs font-light">С нативным разрешением</p>
+                </div>
+                <div class="glass-card p-8 rounded-[2rem] reveal text-center stat-card">
+                    <div class="text-4xl md:text-5xl font-black text-gradient mb-4">100+</div>
+                    <div class="text-xs uppercase tracking-widest text-on-surface-variant mb-2">Игр</div>
+                    <p class="text-on-surface-variant text-xs font-light">С поддержкой DLSS</p>
+                </div>
+                <div class="glass-card p-8 rounded-[2rem] reveal text-center stat-card">
+                    <div class="text-4xl md:text-5xl font-black text-gradient mb-4">-40%</div>
+                    <div class="text-xs uppercase tracking-widest text-on-surface-variant mb-2">Задержка</div>
+                    <p class="text-on-surface-variant text-xs font-light">С NVIDIA Reflex</p>
+                </div>
+            </div>
+
+            <!-- Games Table -->
+            <div class="reveal glass-card p-8 md:p-12 rounded-[2.5rem] overflow-hidden">
+                <h4 class="text-white font-bold text-xl mb-6 flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-lg bg-secondary/20 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-secondary text-sm">videogame_asset</span>
+                    </span>
+                    Популярные игры с поддержкой DLSS
+                </h4>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; table-layout: fixed;">
+                        <colgroup>
+                            <col style="width: 35%;">
+                            <col style="width: 20%;">
+                            <col style="width: 25%;">
+                            <col style="width: 20%;">
+                        </colgroup>
+                        <thead>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <th style="text-align: left; padding: 12px 16px; color: #A1A1A1; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;">Игра</th>
+                                <th style="text-align: left; padding: 12px 16px; color: #A1A1A1; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;">Версия DLSS</th>
+                                <th style="text-align: left; padding: 12px 16px; color: #A1A1A1; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;">Прирост FPS</th>
+                                <th style="text-align: left; padding: 12px 16px; color: #A1A1A1; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;">RTX</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);" class="hover:bg-white/5 transition-colors">
+                                <td style="padding: 12px 16px; color: #F2F2F2; font-size: 14px;">Cyberpunk 2077</td>
+                                <td style="padding: 12px 16px; color: #A1A1A1; font-size: 13px;">DLSS 3.5</td>
+                                <td style="padding: 12px 16px; color: #76B900; font-size: 14px; font-weight: bold;">+250%</td>
+                                <td style="padding: 12px 16px; color: #A1A1A1; font-size: 13px;">40 серия</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);" class="hover:bg-white/5 transition-colors">
+                                <td style="padding: 12px 16px; color: #F2F2F2; font-size: 14px;">Alan Wake 2</td>
+                                <td style="padding: 12px 16px; color: #A1A1A1; font-size: 13px;">DLSS 3.5</td>
+                                <td style="padding: 12px 16px; color: #76B900; font-size: 14px; font-weight: bold;">+200%</td>
+                                <td style="padding: 12px 16px; color: #A1A1A1; font-size: 13px;">40 серия</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);" class="hover:bg-white/5 transition-colors">
+                                <td style="padding: 12px 16px; color: #F2F2F2; font-size: 14px;">Microsoft Flight Simulator</td>
+                                <td style="padding: 12px 16px; color: #A1A1A1; font-size: 13px;">DLSS 3</td>
+                                <td style="padding: 12px 16px; color: #76B900; font-size: 14px; font-weight: bold;">+180%</td>
+                                <td style="padding: 12px 16px; color: #A1A1A1; font-size: 13px;">40 серия</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);" class="hover:bg-white/5 transition-colors">
+                                <td style="padding: 12px 16px; color: #F2F2F2; font-size: 14px;">Black Myth: Wukong</td>
+                                <td style="padding: 12px 16px; color: #A1A1A1; font-size: 13px;">DLSS 3.5</td>
+                                <td style="padding: 12px 16px; color: #76B900; font-size: 14px; font-weight: bold;">+220%</td>
+                                <td style="padding: 12px 16px; color: #A1A1A1; font-size: 13px;">40 серия</td>
+                            </tr>
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td style="padding: 12px 16px; color: #F2F2F2; font-size: 14px;">Control</td>
+                                <td style="padding: 12px 16px; color: #A1A1A1; font-size: 13px;">DLSS 2</td>
+                                <td style="padding: 12px 16px; color: #76B900; font-size: 14px; font-weight: bold;">+100%</td>
+                                <td style="padding: 12px 16px; color: #A1A1A1; font-size: 13px;">Все RTX</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Conclusion Section -->
+    <section class="py-24 md:py-32 px-6 bg-surface-container/50 relative">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <span class="text-primary tracking-[0.3em] uppercase font-bold text-[10px] mb-4 block">Заключение</span>
+                <h2 class="section-title mb-6">Выводы проекта</h2>
+            </div>
+
+            <div class="glass-card p-8 md:p-12 rounded-[2.5rem] reveal border-primary/20">
+                <div class="prose prose-invert max-w-none">
+                    <p class="text-on-surface-variant text-base md:text-lg leading-relaxed mb-6">
+                        Проведённое исследование подтверждает, что <strong class="text-white">нейросетевые технологии</strong> стали ключевым драйвером прогресса в области генерации и улучшения визуального контента. От алгоритмов суперразрешения и интерполяции кадров до глубокой интеграции в графические конвейеры игровых движков — искусственный интеллект предлагает эффективные решения для преодоления традиционного компромисса между качеством изображения и производительностью.
+                    </p>
+                    <p class="text-on-surface-variant text-base md:text-lg leading-relaxed mb-6">
+                        Такие технологии, как <strong class="text-nvidia">DLSS</strong> и <strong class="text-amd">FSR</strong>, уже сегодня кардинально меняют подход к рендерингу в реальном времени, позволяя достигать кинематографичного качества графики без пропорционального роста требований к аппаратному обеспечению.
+                    </p>
+                    <p class="text-on-surface-variant text-base md:text-lg leading-relaxed">
+                        В сфере постпродакшена нейросети автоматизируют трудоемкие процессы реставрации, колоризации и повышения детализации архивных материалов. Основными направлениями дальнейшего развития видятся повышение эффективности и снижение задержек нейросетевой обработки в реальном времени, создание более универсальных моделей, а также углубленная интеграция ИИ на всех этапах создания контента.
+                    </p>
+                </div>
+
+                <div class="mt-8 pt-8 border-t border-white/10">
+                    <div class="flex flex-wrap gap-3 justify-center">
+                        <span class="tech-badge tech-badge-nvidia">
+                            <span class="material-symbols-outlined text-sm">check</span>
+                            DLSS 5
+                        </span>
+                        <span class="tech-badge tech-badge-amd">
+                            <span class="material-symbols-outlined text-sm">check</span>
+                            FSR 4
+                        </span>
+                        <span class="tech-badge tech-badge-topaz">
+                            <span class="material-symbols-outlined text-sm">check</span>
+                            Topaz AI
+                        </span>
+                        <span class="tech-badge tech-badge-primary">
+                            <span class="material-symbols-outlined text-sm">check</span>
+                            Transformer
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="py-24 md:py-32 px-6 relative" id="credits">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <span class="text-primary tracking-[0.3em] uppercase font-bold text-[10px] mb-4 block">Команда проекта</span>
+                <h2 class="section-title mb-6">Авторы работы</h2>
+            </div>
+
+            <div class="glass-card p-8 md:p-12 rounded-[2.5rem] reveal border-primary/20">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div class="text-center p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-primary/30 transition-all group">
+                        <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-5xl text-surface">person</span>
+                        </div>
+                        <h3 class="text-white font-bold text-xl mb-2">Абасов Л. П.</h3>
+                        <p class="text-on-surface-variant text-sm">Студент группы ИС-12</p>
+                        <p class="text-primary text-xs mt-2">МГГТК АГУ</p>
+                    </div>
+                    <div class="text-center p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-secondary/30 transition-all group">
+                        <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-5xl text-surface">person</span>
+                        </div>
+                        <h3 class="text-white font-bold text-xl mb-2">Барамия Д. Е.</h3>
+                        <p class="text-on-surface-variant text-sm">Студент группы ИС-12</p>
+                        <p class="text-secondary text-xs mt-2">МГГТК АГУ</p>
+                    </div>
+                </div>
+
+                <div class="pt-8 border-t border-white/10 text-center">
+                    <p class="text-on-surface-variant text-sm mb-4">Научный руководитель</p>
+                    <div class="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-white/5 border border-white/10">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                            <span class="material-symbols-outlined text-xl text-surface">menu_book</span>
+                        </div>
+                        <div class="text-left">
+                            <div class="text-white font-semibold text-sm">Преподаватель МГГТК АГУ</div>
+                            <div class="text-on-surface-variant text-xs">Майкоп, 2026</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Footer -->
+<footer class="w-full py-16 border-t border-white/5 bg-surface-container overflow-hidden relative">
+    <div class="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent pointer-events-none"></div>
+
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center px-6 md:px-12 max-w-7xl mx-auto gap-8 relative z-10">
+        <div class="space-y-4">
+            <a href="home.html" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center group-hover:shadow-lg group-hover:shadow-primary/30 transition-all">
+                    <span class="material-symbols-outlined text-surface text-xl">school</span>
+                </div>
+                <span class="text-xl font-bold text-white">ИНДИВИДУАЛЬНЫЙ ПРОЕКТ</span>
+            </a>
+            <p class="text-on-surface-variant text-sm font-light max-w-md">Нейросетевые технологии генерации и улучшения изображений и видео</p>
+        </div>
+
+        <div class="flex gap-8">
+            <div class="flex flex-col gap-2">
+                <span class="text-[10px] uppercase tracking-widest text-on-surface/40 font-bold">МГГТК АГУ</span>
+                <span class="text-sm text-on-surface-variant">09.02.07 ИС-12</span>
+                <span class="text-sm text-on-surface-variant">2026</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 md:px-12 mt-8 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] tracking-[0.2em] uppercase text-on-surface/30 relative z-10">
+        <span>© 2026 ИНДИВИДУАЛЬНЫЙ ПРОЕКТ. ВСЕ ПРАВА ЗАЩИЩЕНЫ.</span>
+        <div class="flex gap-6 items-center">
+            <span>Майкоп</span>
+            <span class="w-1 h-1 rounded-full bg-primary self-center"></span>
+            <span>v2.0</span>
+        </div>
+    </div>
+</footer>
+
+<!-- Main JavaScript -->
+<script src="js/main.js"></script>
+
+<!-- Chart Initialization -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Wait for charts to be available
+        if (typeof Chart !== 'undefined') {
+            // FPS Chart
+            const fpsCtx = document.getElementById('fps-chart');
+            if (fpsCtx) {
+                new Chart(fpsCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Без DLSS', 'DLSS 2', 'DLSS 3', 'DLSS 4', 'DLSS 5'],
+                        datasets: [{
+                            label: 'FPS',
+                            data: [30, 55, 90, 120, 180],
+                            backgroundColor: [
+                                'rgba(161, 161, 161, 0.5)',
+                                'rgba(118, 185, 0, 0.5)',
+                                'rgba(118, 185, 0, 0.6)',
+                                'rgba(118, 185, 0, 0.7)',
+                                'rgba(118, 185, 0, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(161, 161, 161, 1)',
+                                'rgba(118, 185, 0, 1)',
+                                'rgba(118, 185, 0, 1)',
+                                'rgba(118, 185, 0, 1)',
+                                'rgba(118, 185, 0, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.05)'
+                                },
+                                ticks: {
+                                    color: '#A1A1A1'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: '#A1A1A1'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
